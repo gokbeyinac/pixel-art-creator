@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -19,14 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <script 
+      <body className={inter.className}>
+        <Script 
           async 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6797067776900735"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className={inter.className}>
         <main className="container mx-auto px-4 py-8 max-w-5xl">
           {children}
         </main>
