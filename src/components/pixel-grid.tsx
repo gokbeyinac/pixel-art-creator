@@ -4,14 +4,19 @@ import { useState, useRef, useEffect } from 'react';
 
 interface PixelGridProps {
   gridSize: number;
+  canvasSize: { width: number; height: number };
   selectedColor: string;
   onGridChange: (grid: string[][]) => void;
 }
 
-export default function PixelGrid({ gridSize, selectedColor, onGridChange }: PixelGridProps) {
+export default function PixelGrid({ gridSize, canvasSize, selectedColor, onGridChange }: PixelGridProps) {
   const [grid, setGrid] = useState<string[][]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Calculate pixel size based on canvas size and grid size
+  const pixelWidth = Math.floor(canvasSize.width / gridSize);
+  const pixelHeight = Math.floor(canvasSize.height / gridSize);
 
   // Initialize the grid with transparent pixels
   useEffect(() => {
@@ -67,10 +72,10 @@ export default function PixelGrid({ gridSize, selectedColor, onGridChange }: Pix
       className="grid border border-gray-300 bg-white shadow-md"
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-        width: '100%',
-        maxWidth: '500px',
-        aspectRatio: '1/1',
+        gridTemplateColumns: `repeat(${gridSize}, ${pixelWidth}px)`,
+        gridTemplateRows: `repeat(${gridSize}, ${pixelHeight}px)`,
+        width: `${pixelWidth * gridSize}px`,
+        height: `${pixelHeight * gridSize}px`,
       }}
       onMouseLeave={handleMouseUp}
     >
@@ -79,7 +84,11 @@ export default function PixelGrid({ gridSize, selectedColor, onGridChange }: Pix
           <div
             key={`${rowIndex}-${colIndex}`}
             className="border border-gray-200 select-none cursor-pointer"
-            style={{ backgroundColor: color }}
+            style={{ 
+              backgroundColor: color,
+              width: `${pixelWidth}px`,
+              height: `${pixelHeight}px`,
+            }}
             onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
             onMouseUp={handleMouseUp}
             onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}

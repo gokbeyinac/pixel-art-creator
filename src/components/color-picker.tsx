@@ -35,21 +35,21 @@ export default function ColorPicker({ onColorSelect, selectedColor }: ColorPicke
   };
 
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold mb-3">Colors</h2>
-      <div className="flex flex-wrap gap-2 mb-4">
+    <div>
+      <h2 className="text-lg font-semibold mb-2">Colors</h2>
+      <div className="flex flex-wrap gap-1 mb-2">
         {defaultColors.map((color) => (
           <button
             key={color}
-            className={`w-8 h-8 rounded-md border ${selectedColor === color ? 'ring-2 ring-blue-500 ring-offset-2' : 'border-gray-300'}`}
+            className={`w-6 h-6 rounded-md border ${selectedColor === color ? 'ring-2 ring-blue-500 ring-offset-1' : 'border-gray-300'}`}
             style={{ backgroundColor: color }}
             onClick={() => onColorSelect(color)}
             aria-label={`Select color ${color}`}
           />
         ))}
       </div>
-      <div className="flex items-center gap-3">
-        <label htmlFor="custom-color" className="font-medium">
+      <div className="flex items-center gap-2">
+        <label htmlFor="custom-color" className="text-sm font-medium">
           Custom:
         </label>
         <input
@@ -57,9 +57,9 @@ export default function ColorPicker({ onColorSelect, selectedColor }: ColorPicke
           id="custom-color"
           value={customColor}
           onChange={handleColorChange}
-          className="h-10 w-10 cursor-pointer"
+          className="h-8 w-8 cursor-pointer"
         />
-        <span className="text-sm">{customColor.toUpperCase()}</span>
+        <span className="text-xs">{customColor.toUpperCase()}</span>
       </div>
     </div>
   );
