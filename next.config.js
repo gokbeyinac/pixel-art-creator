@@ -3,13 +3,13 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'export',
-  // GitHub Pages uses a subdirectory format, so we need to specify the base path
-  // Replace 'pixel-art-creator' with your actual repository name
+  assetPrefix: '/pixel-art-creator/',
   basePath: '/pixel-art-creator',
-  // Disable image optimization since it requires a server
   images: {
     unoptimized: true,
   },
+  // GitHub Pages için trailing slash ekle
+  trailingSlash: true,
 };
 
 module.exports = nextConfig; 
