@@ -31,6 +31,14 @@ export default function Home() {
     setSelectedColor(color);
   };
 
+  const handleClearCanvas = () => {
+    // Yeni boş grid oluştur
+    const newGrid = Array(gridSize)
+      .fill(null)
+      .map(() => Array(gridSize).fill('transparent'));
+    setGrid(newGrid);
+  };
+
   // Calculate pixel size for display in UI
   const pixelWidth = Math.floor(canvasSize.width / gridSize);
   const pixelHeight = Math.floor(canvasSize.height / gridSize);
@@ -61,6 +69,15 @@ export default function Home() {
             fileName={fileName} 
             setFileName={setFileName} 
           />
+          <button
+            onClick={handleClearCanvas}
+            className="w-full mt-2 px-3 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 font-medium transition-colors"
+          >
+            Clear Canvas
+          </button>
+          <div className="text-center mt-1" style={{ fontSize: '8px', color: '#9CA3AF' }}>
+            Gökhan Akıncı hayratı olarak yapılmıştır
+          </div>
         </div>
       </div>
 
