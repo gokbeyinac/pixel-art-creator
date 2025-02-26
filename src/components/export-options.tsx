@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { toPng, toSvg } from 'html-to-image';
+import { toPng } from 'html-to-image';
 
 interface ExportOptionsProps {
   gridRef: React.RefObject<HTMLDivElement>;
@@ -28,44 +28,80 @@ export default function ExportOptions({ gridRef, fileName, setFileName }: Export
     // Tüm pikselleri seçip sınırları geri ekle
     const pixels = gridElement.querySelectorAll('div[data-row]');
     pixels.forEach((pixel) => {
-      (pixel as HTMLElement).style.border = '1px solid #e5e7eb'; // Tailwind gray-200 rengi
+      (pixel as HTMLElement).style.border = '1px solid #f3f4f6'; // Tailwind gray-100 rengi
     });
   };
 
-  const downloadAsSVG = async () => {
+  const downloadAsSVG = () => {
     if (!gridRef.current) return;
     
     try {
-      // Çerçeveleri geçici olarak kaldır
-      removeGridBorders(gridRef.current);
+      // Grid boyutları ve piksel boyutları hakkında bilgi almak
+      const gridElement = gridRef.current;
+      const pixelElements = gridElement.querySelectorAll('div[data-row]');
       
-      const dataUrl = await toSvg(gridRef.current, { 
-        quality: 1,
-        pixelRatio: 3, // Daha yüksek çözünürlük
-        backgroundColor: '#ffffff', // Beyaz arka plan
-        skipFonts: true,
-        filter: (node) => {
-          // Sadece piksel hücrelerini ve ana container'ı dışa aktar
-          return (
-            node.nodeName !== 'BUTTON' && 
-            !node.classList?.contains('border-gray-300') &&
-            !node.classList?.contains('shadow-lg')
-          );
+      if (pixelElements.length === 0) {
+        throw new Error('Grid pikselleri bulunamadı.');
+      }
+
+      // Piksel matrisinin boyutlarını bul
+      const rows = new Set();
+      const columns = new Set();
+      pixelElements.forEach(pixel => {
+        rows.add(pixel.getAttribute('data-row'));
+        columns.add(pixel.getAttribute('data-col'));
+      });
+      
+      const gridSize = Math.max(rows.size, columns.size);
+      
+      // İlk pikselin boyutlarını al (tüm pikseller aynı boyutta olmalı)
+      const firstPixel = pixelElements[0] as HTMLElement;
+      const pixelWidth = parseInt(firstPixel.style.width);
+      const pixelHeight = parseInt(firstPixel.style.height);
+      
+      // SVG'nin toplam boyutlarını hesapla
+      const svgWidth = pixelWidth * gridSize;
+      const svgHeight = pixelHeight * gridSize;
+      
+      // SVG başlangıç metni
+      let svgContent = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+      
+      // Her pikseli SVG içine ekle
+      pixelElements.forEach(pixel => {
+        const pixelElement = pixel as HTMLElement;
+        const row = parseInt(pixelElement.getAttribute('data-row') || '0');
+        const col = parseInt(pixelElement.getAttribute('data-col') || '0');
+        const color = pixelElement.style.backgroundColor;
+        
+        // Sadece renklendirilmiş pikselleri ekle (transparent olmayanlar)
+        if (color && color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') {
+          const x = col * pixelWidth;
+          const y = row * pixelHeight;
+          svgContent += `<rect x="${x}" y="${y}" width="${pixelWidth}" height="${pixelHeight}" fill="${color}" />`;
         }
       });
       
-      // Çerçeveleri geri ekle
-      restoreGridBorders(gridRef.current);
+      // SVG'yi kapat
+      svgContent += '</svg>';
       
+      // SVG içeriğini data URL'e dönüştür
+      const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      
+      // İndirme bağlantısını oluştur ve tıkla
       const link = document.createElement('a');
       link.download = `${fileName || 'pixel-art'}.svg`;
-      link.href = dataUrl;
+      link.href = svgUrl;
       link.click();
+      
+      // URL nesnesini temizle
+      setTimeout(() => {
+        URL.revokeObjectURL(svgUrl);
+      }, 100);
+      
     } catch (error) {
       console.error('Error exporting SVG:', error);
-      // Hata olsa bile çerçeveleri geri ekle
-      if (gridRef.current) restoreGridBorders(gridRef.current);
-      alert('Failed to export as SVG. Please try again.');
+      alert('SVG olarak dışa aktarmada hata oluştu. Lütfen tekrar deneyin.');
     }
   };
 
@@ -110,7 +146,7 @@ export default function ExportOptions({ gridRef, fileName, setFileName }: Export
         restoreGridBorders(gridRef.current);
         gridRef.current.style.border = '1px solid #d1d5db'; // Tailwind gray-300 rengi
       }
-      alert('Failed to export as PNG. Please try again.');
+      alert('PNG olarak dışa aktarmada hata oluştu. Lütfen tekrar deneyin.');
     }
   };
 
