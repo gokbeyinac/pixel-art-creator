@@ -69,13 +69,14 @@ export default function PixelGrid({ gridSize, canvasSize, selectedColor, onGridC
   return (
     <div 
       ref={gridRef}
-      className="grid border border-gray-300 bg-white shadow-md"
+      className="grid bg-white"
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${gridSize}, ${pixelWidth}px)`,
         gridTemplateRows: `repeat(${gridSize}, ${pixelHeight}px)`,
         width: `${pixelWidth * gridSize}px`,
         height: `${pixelHeight * gridSize}px`,
+        border: '1px solid #d1d5db', // Tailwind gray-300
       }}
       onMouseLeave={handleMouseUp}
     >
@@ -83,11 +84,12 @@ export default function PixelGrid({ gridSize, canvasSize, selectedColor, onGridC
         row.map((color, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
-            className="border border-gray-200 select-none cursor-pointer"
+            className="select-none cursor-pointer"
             style={{ 
               backgroundColor: color,
               width: `${pixelWidth}px`,
               height: `${pixelHeight}px`,
+              border: '1px solid #f3f4f6', // Tailwind gray-100 - daha açık çerçeve rengi
             }}
             onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
             onMouseUp={handleMouseUp}

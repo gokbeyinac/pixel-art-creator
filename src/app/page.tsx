@@ -70,7 +70,7 @@ export default function Home() {
           className="max-w-[1200px] mx-auto relative"
           style={{ width: '100%' }}
         >
-          <div ref={gridRef} className="border border-gray-300 shadow-lg">
+          <div ref={gridRef}>
             <PixelGrid 
               gridSize={gridSize} 
               canvasSize={canvasSize}
